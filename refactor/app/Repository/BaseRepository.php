@@ -6,8 +6,9 @@ use Validator;
 use Illuminate\Database\Eloquent\Model;
 use DTApi\Exceptions\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Contracts\BaseRepositoryContract;
 
-class BaseRepository
+class BaseRepository implements BaseRepositoryContract
 {
 
     /**
@@ -45,7 +46,7 @@ class BaseRepository
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Collection|Model[]
+     * @return \Illuminate\Support\Collection
      */
     public function all()
     {
@@ -56,15 +57,14 @@ class BaseRepository
      * @param integer $id
      * @return Model|null
      */
-    public function find($id)
-    {
-        return $this->model->find($id);
+    public function find(int $id, ?array $withRelations = []): ?Model {
+        return $this->model->find($id, $withRelations);
     }
 
-    public function with($array)
-    {
-        return $this->model->with($array);
-    }
+    // public function with($array)
+    // {
+    //     return $this->model->with($array);
+    // }
 
     /**
      * @param integer $id
@@ -154,7 +154,7 @@ class BaseRepository
      * @param array $data
      * @return Model
      */
-    public function create(array $data = [])
+    public function create(array $data = []):Model
     {
         return $this->model->create($data);
     }
@@ -164,7 +164,7 @@ class BaseRepository
      * @param array $data
      * @return Model
      */
-    public function update($id, array $data = [])
+    public function update($id, array $data = []):Model
     {
         $instance = $this->findOrFail($id);
         $instance->update($data);
@@ -176,7 +176,7 @@ class BaseRepository
      * @return Model
      * @throws \Exception
      */
-    public function delete($id)
+    public function delete($id): ?bool
     {
         $model = $this->findOrFail($id);
         $model->delete();
